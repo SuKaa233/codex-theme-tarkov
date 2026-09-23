@@ -1,3 +1,4 @@
 node_modules/
+.test-plugin-data/
 *.log
 .DS_Store

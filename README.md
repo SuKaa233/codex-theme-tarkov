@@ -1,116 +1,119 @@
-# Codex Field Kit
+# Codex Tactical SFX
 
-![Codex Field Kit dual theme preview](docs/preview.svg)
+给 Codex 桌面客户端和 Codex CLI 使用的事件音效插件。它的主体不是换色或宠物，而是把 Codex 的生命周期事件路由成不同声音：
 
-一套为 Codex 桌面客户端与 Codex CLI 设计的战术终端主题。视觉灵感来自撤离射击游戏常见的军用终端、旧纸地图和琥珀色仪表，不包含游戏 Logo、音乐、语音或提取素材。
+| Codex 事件 | 默认音效 | 触发时机 |
+| --- | --- | --- |
+| `Stop` | 任务完成 | 主任务的一轮回复真正停止时 |
+| `PermissionRequest` | 等待确认 | Codex 即将弹出命令、网络或工具授权时 |
+| `PostToolUse` | 工具失败 | 本地工具返回非零退出码或结构化错误时 |
+| `Interrupt` | 已中断 | 用户中止正在执行的任务时 |
 
-项目包含：
+事件接入使用 Codex 官方 [Hooks](https://learn.chatgpt.com/docs/hooks)，不注入 Electron、不替换客户端文件，也不轮询内部数据库。四个 WAV 都由仓库脚本合成，不包含《逃离塔科夫》或其他游戏的提取音频。
 
-- Codex 桌面端深色主题 **Night Raid**；
-- Codex 桌面端浅色主题 **Paper Map**；
-- 与桌面端配套的两份 Codex CLI `.tmTheme`；
-- Windows 一键安装脚本；
-- 可在 Codex 内生成配套“战术信标无人机”宠物的提示词；
-- 无依赖的主题生成与校验脚本。
+## 安装
 
-## 快速安装
-
-### Codex 桌面端
-
-1. 打开 Codex，按 `Ctrl+,` 进入设置。
-2. 进入 **Appearance / 外观**。
-3. 在 **Dark theme** 或 **Light theme** 卡片中点击 **Import**。
-4. 复制并粘贴对应文件的完整一行内容：
-   - 深色：[desktop/codex-field-kit-dark.txt](desktop/codex-field-kit-dark.txt)
-   - 浅色：[desktop/codex-field-kit-light.txt](desktop/codex-field-kit-light.txt)
-5. 选择 Dark、Light 或 System 作为当前外观。
-
-桌面主题使用 Codex 官方 `codex-theme-v1:` 分享格式，不修改、不替换客户端文件。主题导入功能见 [OpenAI 官方设置文档](https://learn.chatgpt.com/docs/reference/settings)。
-
-### Windows：桌面主题复制 + CLI 安装
-
-在 PowerShell 中运行：
+需要 Node.js 18+ 和支持 Hooks 的新版 Codex。在终端执行：
 
 ```powershell
-./scripts/install.ps1 -Variant dark
+codex plugin marketplace add SuKaa233/codex-theme-tarkov
+codex plugin add codex-theme-tarkov@codex-tactical-audio
 ```
 
-脚本会：
+然后重启 Codex 或新建一个任务，输入 `/hooks`，检查并信任 **Codex Tactical SFX** 的四个 Hook。Codex 会按 Hook 内容的哈希记录信任；Hook 后续发生修改时需要重新确认。这是官方对非托管 Hook 的安全要求。
 
-- 将选中的桌面端主题字符串复制到剪贴板；
-- 把两份 CLI 主题复制到 `$CODEX_HOME/themes`，未设置 `CODEX_HOME` 时使用 `%USERPROFILE%\.codex\themes`；
-- 输出下一步的导入提示。
-
-只安装 CLI 主题：
+安装后可先试听：
 
 ```powershell
-./scripts/install.ps1 -SkipClipboard
+npm run preview:complete
+npm run preview:approval
+npm run preview:error
 ```
 
-只复制浅色桌面主题：
+试听命令适合克隆本仓库后的开发环境；实际运行时由 Codex 自动触发。
+
+## 音效系统
+
+核心实现位于 [hooks/sound-hook.mjs](hooks/sound-hook.mjs)：
+
+- 从标准输入读取 Codex 官方 Hook JSON，而不是解析不稳定的聊天记录；
+- 后台播放，不阻塞任务或改变模型上下文；
+- 每个会话和任务按事件类型设置冷却，避免重复提示轰炸；
+- Windows 使用隐藏的 `System.Media.SoundPlayer`，macOS 使用 `afplay`，Linux 自动选择 `paplay`、`aplay` 或 `ffplay`；
+- 支持 `0` 到 `1` 的音量缩放，并在插件数据目录缓存缩放后的 WAV；
+- 单个事件可配置多个 WAV，按会话/任务稳定选择其中一个；
+- 播放器或文件异常只写可选调试日志，不会把 Codex 的工作流标记为失败。
+
+失败音效只覆盖官方 `PostToolUse` 能观察到的本地工具路径，例如 Bash、`apply_patch`、MCP 和本地函数工具。托管工具没有经过这一 Hook，模型本身或网络层的所有错误也没有统一的失败事件，因此本项目不会声称捕获了每一种 Codex 错误。
+
+## 自定义声音与音量
+
+Windows 用户可从仓库创建个人配置：
 
 ```powershell
-./scripts/install.ps1 -Variant light -SkipCli
+./scripts/configure.ps1
 ```
 
-### Codex CLI
+配置位置默认是 `%USERPROFILE%\.codex\codex-tarkov-sfx.json`。也可以用环境变量 `CODEX_TARKOV_SFX_CONFIG` 指向任意 JSON 文件。示例：
 
-安装后启动 `codex`，输入 `/theme`，选择：
+```json
+{
+  "volume": 0.5,
+  "events": {
+    "complete": {
+      "sounds": ["D:\\My Sounds\\done.wav"]
+    },
+    "approval": {
+      "enabled": false
+    }
+  }
+}
+```
 
-- `Codex Field Kit Dark`
-- `Codex Field Kit Light`
+播放器统一使用 WAV。可配置事件为 `complete`、`approval`、`error` 和 `interrupt`；每项支持 `enabled`、`sounds`、`cooldownMs`。完整默认值见 [config/default.json](config/default.json)。修改配置后重启 Codex。
 
-也可以手动把 [themes](themes) 目录中的 `.tmTheme` 文件放入 `$CODEX_HOME/themes`。这是 OpenAI 官方支持的 CLI 自定义主题方式，详见 [CLI customization](https://learn.chatgpt.com/docs/cli-customization)。
-
-## 配色
-
-| 角色 | Night Raid | Paper Map | 用途 |
-| --- | --- | --- | --- |
-| Surface | `#151711` | `#E9E4D2` | 主背景 |
-| Ink | `#E5E2D4` | `#262920` | 主文字 |
-| Accent | `#C4A35A` | `#65773A` | 焦点、按钮、链接 |
-| Diff added | `#7FA45A` | `#416B35` | 新增内容 |
-| Diff removed | `#D4645C` | `#9D423C` | 删除和错误 |
-| Skill | `#B29ACB` | `#6F5687` | 技能与特殊状态 |
-
-详细设计令牌见 [docs/design.md](docs/design.md)。桌面主题内置了跨平台字体回退栈；CLI 主题负责代码、Markdown 与 diff 的语法色。
-
-## 配套宠物
-
-Codex 桌面端支持本地自定义宠物。打开 **Settings > Pets > Create pet**，把 [pet/PET_PROMPT.md](pet/PET_PROMPT.md) 中的提示词发送给自动打开的宠物创建任务即可。宠物由 Codex 官方 `hatch-pet` 工作流在本机生成，不需要替换客户端资源。
-
-## 开发与校验
+## 开发与验证
 
 ```bash
 npm test
 ```
 
-`npm test` 会重新生成桌面主题分享字符串，并检查：
+测试会完成以下检查：
 
-- `codex-theme-v1:` 前缀和 JSON 结构；
-- 深浅主题的 variant、颜色、对比度和语义色；
-- 生成文件与源配置一致；
-- 两份 `.tmTheme` 都是可解析的 XML plist；
-- 安装脚本引用的所有文件都存在。
+- 重新生成四个确定性的原创 WAV；
+- 用模拟 Hook JSON 验证四类事件路由及成功工具不误报；
+- 校验插件清单、Hook 配置、市场入口和 WAV 头；
+- 继续校验附带的桌面端与 CLI 主题。
 
-主题源配置在 [desktop/themes.json](desktop/themes.json)。修改后运行 `npm run build`。
+手动查看某个事件的路由结果而不播放声音：
+
+```powershell
+'{"hook_event_name":"Stop","session_id":"demo","turn_id":"1"}' |
+  node ./hooks/sound-hook.mjs --dry-run
+```
+
+## 可选视觉附属
+
+仓库仍保留初版的 Night Raid / Paper Map 桌面主题、CLI `.tmTheme` 和宠物提示词，但它们不参与音效插件运行。需要时再查看：
+
+- 桌面主题字符串：[desktop](desktop)
+- CLI 主题：[themes](themes)
+- 视觉设计说明：[docs/design.md](docs/design.md)
+- 可选宠物提示词：[pet/PET_PROMPT.md](pet/PET_PROMPT.md)
+
+旧的 [scripts/install.ps1](scripts/install.ps1) 只负责安装这些可选视觉主题。
 
 ## 与参考项目的关系
 
-本项目受 [ZHIGENGNIAO258/dsh-theme-tarkov](https://github.com/ZHIGENGNIAO258/dsh-theme-tarkov) 的产品思路启发。参考项目是 DeepSeek Harness Web 插件，依赖 DSH 的 Host 路由和浏览器注入点，不能直接用于 Codex。
-
-本仓库没有复制参考项目的客户端注入代码、音频或游戏素材；它使用 Codex 官方主题分享、CLI `.tmTheme` 和官方自定义宠物入口重新实现相近的视觉体验。
+本项目受 [ZHIGENGNIAO258/dsh-theme-tarkov](https://github.com/ZHIGENGNIAO258/dsh-theme-tarkov) 的事件音效体验启发。参考项目依赖 DeepSeek Harness 的 Host 路由和浏览器注入点，不能直接用于 Codex；这里改用 Codex 官方 Hooks 重新实现事件层和音频播放器，没有复制其音频、Logo 或客户端注入代码。
 
 ## 兼容性
 
-- 桌面主题格式已按 Codex Windows `26.915.4065.0` 的导入契约生成；Codex 在 `26.312` 版本加入了自定义主题功能。
-- CLI 主题按 Codex CLI `0.150.1` 的 `.tmTheme` 入口验证。
-- 如果后续 Codex 升级主题分享版本，运行 `npm test` 仍可检查本仓库内部一致性，但需要按新版客户端重新导出一次分享字符串。
+- 已按 Codex Hooks 当前的 `Stop`、`PermissionRequest`、`PostToolUse`、`Interrupt` 输入契约实现；
+- Windows 播放链路使用系统自带 PowerShell 与 .NET，macOS/Linux 需要系统播放器；
+- Hook 命令要求 `node` 在 Codex 进程可见的 `PATH` 中；
+- 主题附属仍兼容 Codex Windows `26.915.4065.0` 和 CLI `0.150.1` 的已验证格式。
 
-## 声明
+## 声明与许可
 
-这是非官方社区主题，与 OpenAI 或 Battlestate Games 无隶属关系。“Codex”“Escape from Tarkov”等名称与商标归各自权利人所有。
-
-## License
-
-MIT
+这是非官方社区项目，与 OpenAI 或 Battlestate Games 无隶属关系。“Codex”“Escape from Tarkov”等名称与商标归各自权利人所有。代码与原创音效生成脚本采用 MIT License。

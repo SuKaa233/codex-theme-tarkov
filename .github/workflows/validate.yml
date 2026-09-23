@@ -1,4 +1,4 @@
-name: Validate themes
+name: Validate plugin
 
 on:
   push:

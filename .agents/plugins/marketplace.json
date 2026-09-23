@@ -1,0 +1,20 @@
+{
+  "name": "codex-tactical-audio",
+  "interface": {
+    "displayName": "Codex Tactical Audio"
+  },
+  "plugins": [
+    {
+      "name": "codex-theme-tarkov",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/SuKaa233/codex-theme-tarkov.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

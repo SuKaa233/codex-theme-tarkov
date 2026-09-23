@@ -1,0 +1,11 @@
+{
+  "volume": 0.5,
+  "events": {
+    "complete": {
+      "sounds": ["D:\\My Sounds\\done.wav"]
+    },
+    "approval": {
+      "enabled": false
+    }
+  }
+}

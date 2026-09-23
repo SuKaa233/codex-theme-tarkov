@@ -1,12 +1,15 @@
 {
   "name": "codex-theme-tarkov",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "An extraction-inspired tactical theme pack for the Codex desktop app and Codex CLI.",
+  "description": "Lifecycle-driven tactical sound effects for Codex, packaged as an official hooks plugin.",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-themes.mjs",
-    "check": "node scripts/validate-themes.mjs",
+    "build": "node scripts/build-themes.mjs && node scripts/generate-sounds.mjs",
+    "preview:complete": "node hooks/sound-hook.mjs --preview complete",
+    "preview:approval": "node hooks/sound-hook.mjs --preview approval",
+    "preview:error": "node hooks/sound-hook.mjs --preview error",
+    "check": "node scripts/validate-themes.mjs && node scripts/validate-plugin.mjs && node scripts/test-sound-hook.mjs",
     "test": "npm run build && npm run check"
   },
   "license": "MIT",

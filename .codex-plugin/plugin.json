@@ -1,0 +1,27 @@
+{
+  "name": "codex-theme-tarkov",
+  "version": "2.0.0",
+  "description": "Lifecycle-driven tactical sound effects for Codex.",
+  "author": {
+    "name": "SuKaa233",
+    "url": "https://github.com/SuKaa233"
+  },
+  "homepage": "https://github.com/SuKaa233/codex-theme-tarkov",
+  "repository": "https://github.com/SuKaa233/codex-theme-tarkov",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "hooks",
+    "sound-effects",
+    "notifications"
+  ],
+  "interface": {
+    "displayName": "Codex Tactical SFX",
+    "shortDescription": "Hear completion, approval, failure, and interrupt events.",
+    "longDescription": "Adds configurable tactical sound cues to Codex by using official lifecycle hooks. Includes original WAV assets and optional visual themes.",
+    "developerName": "SuKaa233",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Help me configure or test Codex Tactical SFX."
+  }
+}

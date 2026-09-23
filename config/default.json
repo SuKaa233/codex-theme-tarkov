@@ -1,0 +1,27 @@
+{
+  "enabled": true,
+  "volume": 0.72,
+  "debug": false,
+  "events": {
+    "complete": {
+      "enabled": true,
+      "sounds": ["assets/sounds/mission-complete.wav"],
+      "cooldownMs": 800
+    },
+    "approval": {
+      "enabled": true,
+      "sounds": ["assets/sounds/approval-required.wav"],
+      "cooldownMs": 1600
+    },
+    "error": {
+      "enabled": true,
+      "sounds": ["assets/sounds/tool-failed.wav"],
+      "cooldownMs": 1400
+    },
+    "interrupt": {
+      "enabled": true,
+      "sounds": ["assets/sounds/interrupted.wav"],
+      "cooldownMs": 800
+    }
+  }
+}

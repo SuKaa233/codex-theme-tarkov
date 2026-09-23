@@ -1,0 +1,44 @@
+{
+  "dark": {
+    "codeThemeId": "gruvbox",
+    "theme": {
+      "accent": "#c4a35a",
+      "accentSource": "custom",
+      "contrast": 72,
+      "fonts": {
+        "code": "\"Cascadia Code\", \"Cascadia Mono\", Consolas, monospace",
+        "ui": "\"Segoe UI Variable\", \"Segoe UI\", Inter, sans-serif"
+      },
+      "ink": "#e5e2d4",
+      "opaqueWindows": false,
+      "semanticColors": {
+        "diffAdded": "#7fa45a",
+        "diffRemoved": "#d4645c",
+        "skill": "#b29acb"
+      },
+      "surface": "#151711"
+    },
+    "variant": "dark"
+  },
+  "light": {
+    "codeThemeId": "gruvbox",
+    "theme": {
+      "accent": "#65773a",
+      "accentSource": "custom",
+      "contrast": 52,
+      "fonts": {
+        "code": "\"Cascadia Code\", \"Cascadia Mono\", Consolas, monospace",
+        "ui": "\"Segoe UI Variable\", \"Segoe UI\", Inter, sans-serif"
+      },
+      "ink": "#262920",
+      "opaqueWindows": false,
+      "semanticColors": {
+        "diffAdded": "#416b35",
+        "diffRemoved": "#9d423c",
+        "skill": "#6f5687"
+      },
+      "surface": "#e9e4d2"
+    },
+    "variant": "light"
+  }
+}

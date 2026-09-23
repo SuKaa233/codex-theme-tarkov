@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Codex Field Kit theme preview</title>
+  <desc id="desc">Side by side previews of the Night Raid dark theme and Paper Map light theme.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="28" flood-color="#080904" flood-opacity=".28"/>
+    </filter>
+    <pattern id="grain" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M0 18h36M18 0v36" stroke="#ffffff" stroke-opacity=".025"/>
+      <circle cx="8" cy="7" r="1" fill="#ffffff" fill-opacity=".035"/>
+      <circle cx="28" cy="27" r="1" fill="#000000" fill-opacity=".04"/>
+    </pattern>
+  </defs>
+
+  <rect width="1440" height="900" fill="#0d0f0b"/>
+  <rect width="1440" height="900" fill="url(#grain)"/>
+  <text x="88" y="92" fill="#e5e2d4" font-family="Segoe UI, sans-serif" font-size="42" font-weight="700" letter-spacing="4">CODEX FIELD KIT</text>
+  <text x="90" y="128" fill="#9a9b88" font-family="Segoe UI, sans-serif" font-size="17" letter-spacing="2">TACTICAL TERMINAL THEME · NIGHT RAID / PAPER MAP</text>
+
+  <g transform="translate(78 178)" filter="url(#shadow)">
+    <rect width="624" height="620" rx="22" fill="#151711" stroke="#34372a"/>
+    <rect width="178" height="620" rx="22" fill="#1d2017"/>
+    <path d="M178 0v620" stroke="#34372a"/>
+    <circle cx="32" cy="32" r="7" fill="#d4645c"/><circle cx="54" cy="32" r="7" fill="#c4a35a"/><circle cx="76" cy="32" r="7" fill="#7fa45a"/>
+    <text x="24" y="92" fill="#c4a35a" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" letter-spacing="1.6">FIELD OPS</text>
+    <g fill="#a6a894" font-family="Segoe UI, sans-serif" font-size="14">
+      <text x="24" y="134">＋ New task</text><text x="24" y="174">⌕ Search</text><text x="24" y="214">◎ Automations</text>
+    </g>
+    <text x="24" y="280" fill="#666a58" font-family="Segoe UI, sans-serif" font-size="11" letter-spacing="1.4">PROJECTS</text>
+    <rect x="14" y="298" width="150" height="42" rx="8" fill="#2a2d20"/>
+    <rect x="22" y="310" width="4" height="18" rx="2" fill="#c4a35a"/>
+    <text x="36" y="324" fill="#e5e2d4" font-family="Segoe UI, sans-serif" font-size="13">raid-console</text>
+    <text x="24" y="374" fill="#a6a894" font-family="Segoe UI, sans-serif" font-size="13">signal-parser</text>
+    <text x="24" y="414" fill="#a6a894" font-family="Segoe UI, sans-serif" font-size="13">supply-map</text>
+
+    <text x="210" y="52" fill="#858775" font-family="Segoe UI, sans-serif" font-size="12" letter-spacing="1.3">NIGHT RAID</text>
+    <text x="210" y="102" fill="#e5e2d4" font-family="Segoe UI, sans-serif" font-size="28" font-weight="650">Map the extraction flow</text>
+    <text x="210" y="136" fill="#9ea08d" font-family="Segoe UI, sans-serif" font-size="14">Trace the real route before changing the handler.</text>
+    <rect x="210" y="178" width="380" height="194" rx="12" fill="#10120d" stroke="#34372a"/>
+    <rect x="210" y="178" width="380" height="34" rx="12" fill="#20231a"/>
+    <circle cx="230" cy="195" r="4" fill="#c4a35a"/>
+    <text x="244" y="200" fill="#858775" font-family="Cascadia Mono, monospace" font-size="11">src/routes/operation.ts</text>
+    <g font-family="Cascadia Mono, monospace" font-size="12">
+      <text x="228" y="242" fill="#d18b58">export async function</text><text x="382" y="242" fill="#d8c58f"> traceRoute</text><text x="465" y="242" fill="#e5e2d4">() {</text>
+      <text x="244" y="270" fill="#858775">// verify the live contract</text>
+      <text x="244" y="298" fill="#d18b58">const</text><text x="286" y="298" fill="#cdd0be"> result</text><text x="334" y="298" fill="#e5e2d4"> = </text><text x="350" y="298" fill="#d18b58">await</text><text x="394" y="298" fill="#d8c58f"> inspect</text><text x="446" y="298" fill="#a9b67b">('route')</text>
+      <text x="244" y="326" fill="#d18b58">return</text><text x="292" y="326" fill="#cdd0be"> result</text><text x="336" y="326" fill="#e5e2d4">;</text>
+      <text x="228" y="354" fill="#e5e2d4">}</text>
+    </g>
+    <rect x="210" y="402" width="380" height="80" rx="12" fill="#20231a"/>
+    <circle cx="232" cy="426" r="6" fill="#7fa45a"/>
+    <text x="250" y="432" fill="#e5e2d4" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">Route verified</text>
+    <text x="232" y="460" fill="#9ea08d" font-family="Segoe UI, sans-serif" font-size="12">3 files inspected · contract unchanged</text>
+    <rect x="210" y="518" width="380" height="64" rx="16" fill="#10120d" stroke="#3d4031"/>
+    <text x="232" y="556" fill="#858775" font-family="Segoe UI, sans-serif" font-size="14">Ask Codex to continue the operation…</text>
+    <circle cx="564" cy="550" r="18" fill="#c4a35a"/>
+    <path d="M557 550h14m-5-5 5 5-5 5" fill="none" stroke="#151711" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(738 178)" filter="url(#shadow)">
+    <rect width="624" height="620" rx="22" fill="#e9e4d2" stroke="#c8c2ad"/>
+    <rect width="178" height="620" rx="22" fill="#ddd7c3"/>
+    <path d="M178 0v620" stroke="#c8c2ad"/>
+    <circle cx="32" cy="32" r="7" fill="#9d423c"/><circle cx="54" cy="32" r="7" fill="#80621f"/><circle cx="76" cy="32" r="7" fill="#416b35"/>
+    <text x="24" y="92" fill="#65773a" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" letter-spacing="1.6">FIELD OPS</text>
+    <g fill="#5f6255" font-family="Segoe UI, sans-serif" font-size="14">
+      <text x="24" y="134">＋ New task</text><text x="24" y="174">⌕ Search</text><text x="24" y="214">◎ Automations</text>
+    </g>
+    <text x="24" y="280" fill="#888575" font-family="Segoe UI, sans-serif" font-size="11" letter-spacing="1.4">PROJECTS</text>
+    <rect x="14" y="298" width="150" height="42" rx="8" fill="#cfc9b4"/>
+    <rect x="22" y="310" width="4" height="18" rx="2" fill="#65773a"/>
+    <text x="36" y="324" fill="#262920" font-family="Segoe UI, sans-serif" font-size="13">raid-console</text>
+    <text x="24" y="374" fill="#5f6255" font-family="Segoe UI, sans-serif" font-size="13">signal-parser</text>
+    <text x="24" y="414" fill="#5f6255" font-family="Segoe UI, sans-serif" font-size="13">supply-map</text>
+
+    <text x="210" y="52" fill="#7c7b6b" font-family="Segoe UI, sans-serif" font-size="12" letter-spacing="1.3">PAPER MAP</text>
+    <text x="210" y="102" fill="#262920" font-family="Segoe UI, sans-serif" font-size="28" font-weight="650">Map the extraction flow</text>
+    <text x="210" y="136" fill="#65675a" font-family="Segoe UI, sans-serif" font-size="14">Trace the real route before changing the handler.</text>
+    <rect x="210" y="178" width="380" height="194" rx="12" fill="#f2eddc" stroke="#c8c2ad"/>
+    <rect x="210" y="178" width="380" height="34" rx="12" fill="#ddd7c3"/>
+    <circle cx="230" cy="195" r="4" fill="#65773a"/>
+    <text x="244" y="200" fill="#707264" font-family="Cascadia Mono, monospace" font-size="11">src/routes/operation.ts</text>
+    <g font-family="Cascadia Mono, monospace" font-size="12">
+      <text x="228" y="242" fill="#9a4f2f">export async function</text><text x="382" y="242" fill="#725a22"> traceRoute</text><text x="465" y="242" fill="#262920">() {</text>
+      <text x="244" y="270" fill="#707264">// verify the live contract</text>
+      <text x="244" y="298" fill="#9a4f2f">const</text><text x="286" y="298" fill="#3e4236"> result</text><text x="334" y="298" fill="#262920"> = </text><text x="350" y="298" fill="#9a4f2f">await</text><text x="394" y="298" fill="#725a22"> inspect</text><text x="446" y="298" fill="#4f6b39">('route')</text>
+      <text x="244" y="326" fill="#9a4f2f">return</text><text x="292" y="326" fill="#3e4236"> result</text><text x="336" y="326" fill="#262920">;</text>
+      <text x="228" y="354" fill="#262920">}</text>
+    </g>
+    <rect x="210" y="402" width="380" height="80" rx="12" fill="#ddd7c3"/>
+    <circle cx="232" cy="426" r="6" fill="#416b35"/>
+    <text x="250" y="432" fill="#262920" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">Route verified</text>
+    <text x="232" y="460" fill="#65675a" font-family="Segoe UI, sans-serif" font-size="12">3 files inspected · contract unchanged</text>
+    <rect x="210" y="518" width="380" height="64" rx="16" fill="#f2eddc" stroke="#c8c2ad"/>
+    <text x="232" y="556" fill="#777667" font-family="Segoe UI, sans-serif" font-size="14">Ask Codex to continue the operation…</text>
+    <circle cx="564" cy="550" r="18" fill="#65773a"/>
+    <path d="M557 550h14m-5-5 5 5-5 5" fill="none" stroke="#f2eddc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <text x="720" y="850" text-anchor="middle" fill="#777966" font-family="Segoe UI, sans-serif" font-size="13" letter-spacing="1.8">OFFICIAL THEME IMPORT · NO APP PATCHING · UPDATE SAFE</text>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "name": "codex-theme-tarkov",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An extraction-inspired tactical theme pack for the Codex desktop app and Codex CLI.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-themes.mjs",
+    "check": "node scripts/validate-themes.mjs",
+    "test": "npm run build && npm run check"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SuKaa233/codex-theme-tarkov.git"
+  }
+}

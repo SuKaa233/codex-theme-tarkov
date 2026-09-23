@@ -1,26 +1,26 @@
 {
   "enabled": true,
-  "volume": 0.72,
+  "volume": 0.7,
   "debug": false,
   "events": {
     "complete": {
       "enabled": true,
-      "sounds": ["assets/sounds/mission-complete.wav"],
+      "sounds": ["assets/sounds/done.m4a"],
       "cooldownMs": 800
     },
     "approval": {
       "enabled": true,
-      "sounds": ["assets/sounds/approval-required.wav"],
+      "sounds": ["assets/sounds/approval.m4a"],
       "cooldownMs": 1600
     },
     "error": {
       "enabled": true,
-      "sounds": ["assets/sounds/tool-failed.wav"],
+      "sounds": ["assets/sounds/error.m4a"],
       "cooldownMs": 1400
     },
     "interrupt": {
       "enabled": true,
-      "sounds": ["assets/sounds/interrupted.wav"],
+      "sounds": ["assets/sounds/error.m4a"],
       "cooldownMs": 800
     }
   }

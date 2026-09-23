@@ -1,7 +1,7 @@
 {
   "name": "codex-theme-tarkov",
-  "version": "2.0.0",
-  "description": "Lifecycle-driven tactical sound effects for Codex.",
+  "version": "2.1.0+codex.20260923065906",
+  "description": "Original dsh-theme-tarkov notification audio mapped to Codex lifecycle hooks.",
   "author": {
     "name": "SuKaa233",
     "url": "https://github.com/SuKaa233"
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Codex Tactical SFX",
     "shortDescription": "Hear completion, approval, failure, and interrupt events.",
-    "longDescription": "Adds configurable tactical sound cues to Codex by using official lifecycle hooks. Includes original WAV assets and optional visual themes.",
+    "longDescription": "Maps the original done, approval, and error audio from dsh-theme-tarkov to Codex lifecycle hooks, with the upstream 70% default volume.",
     "developerName": "SuKaa233",
     "category": "Productivity",
     "capabilities": [],

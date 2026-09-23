@@ -1,14 +1,15 @@
 {
   "name": "codex-theme-tarkov",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "Lifecycle-driven tactical sound effects for Codex, packaged as an official hooks plugin.",
+  "description": "Codex lifecycle hooks using the original dsh-theme-tarkov notification audio.",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-themes.mjs && node scripts/generate-sounds.mjs",
+    "build": "node scripts/build-themes.mjs",
     "preview:complete": "node hooks/sound-hook.mjs --preview complete",
     "preview:approval": "node hooks/sound-hook.mjs --preview approval",
     "preview:error": "node hooks/sound-hook.mjs --preview error",
+    "preview:interrupt": "node hooks/sound-hook.mjs --preview interrupt",
     "check": "node scripts/validate-themes.mjs && node scripts/validate-plugin.mjs && node scripts/test-sound-hook.mjs",
     "test": "npm run build && npm run check"
   },

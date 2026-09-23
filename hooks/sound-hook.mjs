@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { homedir, platform, tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +12,6 @@ const PLUGIN_DATA = resolve(
 );
 const DEFAULT_CONFIG_PATH = join(PLUGIN_ROOT, 'config', 'default.json');
 const STATE_PATH = join(PLUGIN_DATA, 'state.json');
-const CACHE_DIR = join(PLUGIN_DATA, 'cache');
 const MAX_STATE_AGE_MS = 24 * 60 * 60 * 1000;
 
 function parseArgs(argv) {
@@ -175,64 +174,17 @@ function claimCooldown(kind, event, cooldownMs, dryRun) {
   return true;
 }
 
-function scalePcm16Wave(sourcePath, volume) {
-  const source = readFileSync(sourcePath);
-  if (volume >= 0.999) return sourcePath;
-  if (source.toString('ascii', 0, 4) !== 'RIFF' || source.toString('ascii', 8, 12) !== 'WAVE') {
-    return sourcePath;
-  }
-
-  let offset = 12;
-  let bitsPerSample = 0;
-  let audioFormat = 0;
-  let dataStart = -1;
-  let dataSize = 0;
-  while (offset + 8 <= source.length) {
-    const chunkId = source.toString('ascii', offset, offset + 4);
-    const chunkSize = source.readUInt32LE(offset + 4);
-    const chunkStart = offset + 8;
-    if (chunkId === 'fmt ' && chunkSize >= 16) {
-      audioFormat = source.readUInt16LE(chunkStart);
-      bitsPerSample = source.readUInt16LE(chunkStart + 14);
-    }
-    if (chunkId === 'data') {
-      dataStart = chunkStart;
-      dataSize = Math.min(chunkSize, source.length - chunkStart);
-      break;
-    }
-    offset = chunkStart + chunkSize + (chunkSize % 2);
-  }
-  if (audioFormat !== 1 || bitsPerSample !== 16 || dataStart < 0) return sourcePath;
-
-  mkdirSync(CACHE_DIR, { recursive: true });
-  const stat = statSync(sourcePath);
-  const cacheKey = createHash('sha256')
-    .update(`${sourcePath}:${stat.mtimeMs}:${stat.size}:${volume.toFixed(3)}`)
-    .digest('hex')
-    .slice(0, 16);
-  const cachePath = join(CACHE_DIR, `${cacheKey}.wav`);
-  if (existsSync(cachePath)) return cachePath;
-
-  const output = Buffer.from(source);
-  for (let position = dataStart; position + 1 < dataStart + dataSize; position += 2) {
-    const sample = output.readInt16LE(position);
-    output.writeInt16LE(Math.max(-32768, Math.min(32767, Math.round(sample * volume))), position);
-  }
-  writeFileSync(cachePath, output);
-  return cachePath;
-}
-
 function commandExists(command) {
   const result = spawnSync('sh', ['-lc', `command -v ${command}`], { stdio: 'ignore' });
   return result.status === 0;
 }
 
-function launchPlayer(soundPath) {
+function launchPlayer(soundPath, volume) {
   const currentPlatform = platform();
   let child;
   let player;
   if (currentPlatform === 'win32') {
-    player = 'System.Media.SoundPlayer';
+    player = 'System.Windows.Media.MediaPlayer';
     child = spawn(
       'powershell.exe',
       [
@@ -242,22 +194,37 @@ function launchPlayer(soundPath) {
         '-WindowStyle',
         'Hidden',
         '-Command',
-        "$p = New-Object System.Media.SoundPlayer($env:CODEX_TARKOV_SFX_FILE); $p.PlaySync()",
+        [
+          'Add-Type -AssemblyName PresentationCore',
+          '$p = [System.Windows.Media.MediaPlayer]::new()',
+          '$p.Open([Uri]::new($env:CODEX_TARKOV_SFX_FILE))',
+          '$deadline = [DateTime]::UtcNow.AddSeconds(5)',
+          'while (-not $p.NaturalDuration.HasTimeSpan -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 50 }',
+          '$p.Volume = [double]$env:CODEX_TARKOV_SFX_VOLUME',
+          '$p.Play()',
+          '$duration = if ($p.NaturalDuration.HasTimeSpan) { $p.NaturalDuration.TimeSpan.TotalMilliseconds } else { 5000 }',
+          'Start-Sleep -Milliseconds ([Math]::Ceiling($duration + 250))',
+          '$p.Close()',
+        ].join('; '),
       ],
       {
         detached: true,
-        env: { ...process.env, CODEX_TARKOV_SFX_FILE: soundPath },
+        env: {
+          ...process.env,
+          CODEX_TARKOV_SFX_FILE: soundPath,
+          CODEX_TARKOV_SFX_VOLUME: String(volume),
+        },
         stdio: 'ignore',
         windowsHide: true,
       },
     );
   } else if (currentPlatform === 'darwin') {
     player = 'afplay';
-    child = spawn('afplay', [soundPath], { detached: true, stdio: 'ignore' });
+    child = spawn('afplay', ['-v', String(volume), soundPath], { detached: true, stdio: 'ignore' });
   } else {
-    player = ['paplay', 'aplay', 'ffplay'].find(commandExists);
-    if (!player) throw new Error('No supported audio player found (paplay, aplay, or ffplay).');
-    const args = player === 'ffplay' ? ['-nodisp', '-autoexit', '-loglevel', 'quiet', soundPath] : [soundPath];
+    player = commandExists('ffplay') ? 'ffplay' : null;
+    if (!player) throw new Error('ffplay is required to play the bundled M4A sounds on Linux.');
+    const args = ['-nodisp', '-autoexit', '-loglevel', 'quiet', '-volume', String(Math.round(volume * 100)), soundPath];
     child = spawn(player, args, { detached: true, stdio: 'ignore' });
   }
   child.on('error', () => {});
@@ -298,14 +265,13 @@ async function main() {
   if (volume === 0) return;
   if (!claimCooldown(kind, event, Number(eventConfig.cooldownMs || 0), args.dryRun)) return;
 
-  const playablePath = args.dryRun ? sourcePath : scalePcm16Wave(sourcePath, volume);
   const result = {
     kind,
     hookEvent: event.hook_event_name,
     sound: sourcePath,
     volume,
     overridePath,
-    player: args.dryRun ? 'dry-run' : launchPlayer(playablePath),
+    player: args.dryRun ? 'dry-run' : launchPlayer(sourcePath, volume),
   };
   if (args.dryRun) process.stdout.write(`${JSON.stringify(result)}\n`);
 }

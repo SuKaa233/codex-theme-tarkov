@@ -55,4 +55,14 @@ assert.equal(
 assert.equal(run({ hook_event_name: 'Stop', stop_hook_active: true }), null);
 assert.equal(run({ hook_event_name: 'Interrupt', session_id: 's1', turn_id: 't1' }).kind, 'interrupt');
 
+const complete = run({ hook_event_name: 'Stop', session_id: 'mapping', turn_id: 'complete' });
+assert.match(complete.sound, /assets[\\/]sounds[\\/]done\.m4a$/);
+assert.equal(complete.volume, 0.7);
+const approval = run({ hook_event_name: 'PermissionRequest', session_id: 'mapping', turn_id: 'approval' });
+assert.match(approval.sound, /assets[\\/]sounds[\\/]approval\.m4a$/);
+const error = run({ hook_event_name: 'PostToolUse', session_id: 'mapping', turn_id: 'error', tool_response: { isError: true } });
+assert.match(error.sound, /assets[\\/]sounds[\\/]error\.m4a$/);
+const interrupt = run({ hook_event_name: 'Interrupt', session_id: 'mapping', turn_id: 'interrupt' });
+assert.equal(interrupt.sound, error.sound, 'Upstream maps interruption/failure to the same error sound.');
+
 console.log('Sound hook routing tests passed.');

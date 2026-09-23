@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,6 +25,12 @@ for (const event of ['Stop', 'PermissionRequest', 'PostToolUse', 'Interrupt']) {
 }
 
 const config = parse('config/default.json');
+assert.equal(config.volume, 0.7, 'Upstream dsh-theme-tarkov uses 70% SFX volume.');
+const upstreamHashes = {
+  'assets/sounds/done.m4a': 'B05D86E39F52A01296A8D75D4CBEF97224CCF834CE1D775CAD0340145AA75292',
+  'assets/sounds/approval.m4a': '720AEDBEF3358909E063CEF104FCA8FE263641D153F3EB812AF20980D664538C',
+  'assets/sounds/error.m4a': 'C19E1070168C0A0CA6ACAF8B8A5A7A4518852BFC0FD9CDA70C95ABB764A4C7E6',
+};
 for (const kind of ['complete', 'approval', 'error', 'interrupt']) {
   const event = config.events[kind];
   assert.equal(event.enabled, true);
@@ -31,9 +38,10 @@ for (const kind of ['complete', 'approval', 'error', 'interrupt']) {
   for (const sound of event.sounds) {
     const path = join(ROOT, sound);
     assert.ok(existsSync(path), `Missing sound: ${sound}`);
-    const header = readFileSync(path).subarray(0, 12);
-    assert.equal(header.toString('ascii', 0, 4), 'RIFF');
-    assert.equal(header.toString('ascii', 8, 12), 'WAVE');
+    const bytes = readFileSync(path);
+    assert.equal(bytes.toString('ascii', 4, 8), 'ftyp', `Expected M4A/MP4 header: ${sound}`);
+    const digest = createHash('sha256').update(bytes).digest('hex').toUpperCase();
+    assert.equal(digest, upstreamHashes[sound], `Upstream audio hash mismatch: ${sound}`);
     assert.ok(statSync(path).size > 1000, `Sound is unexpectedly small: ${sound}`);
   }
 }
@@ -44,4 +52,5 @@ assert.ok(entry, 'Marketplace entry is missing.');
 assert.equal(entry.policy.installation, 'AVAILABLE');
 assert.equal(entry.policy.authentication, 'ON_INSTALL');
 
-console.log('Plugin manifest, hooks, marketplace, and WAV assets are valid.');
+assert.equal(config.events.interrupt.sounds[0], 'assets/sounds/error.m4a');
+console.log('Plugin manifest, hooks, marketplace, and upstream M4A hashes are valid.');

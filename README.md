@@ -39,6 +39,7 @@ npm run preview:interrupt
 
 - 从标准输入读取 Codex 官方 Hook JSON，而不是解析不稳定的聊天记录；
 - 后台播放，不阻塞任务或改变模型上下文；
+- Hook 会等待隐藏播放器正常退出，避免 Codex 回收进程时截断 7 秒的完成音；
 - 每个会话和任务按事件类型设置冷却，避免重复提示轰炸；
 - Windows 使用隐藏的 `System.Windows.Media.MediaPlayer`，macOS 使用 `afplay`，Linux 使用 `ffplay`；
 - 支持 `0` 到 `1` 的播放器音量，默认 `0.7`，不会改写原始 M4A 字节；

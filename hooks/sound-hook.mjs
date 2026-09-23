@@ -208,7 +208,6 @@ function launchPlayer(soundPath, volume) {
         ].join('; '),
       ],
       {
-        detached: true,
         env: {
           ...process.env,
           CODEX_TARKOV_SFX_FILE: soundPath,
@@ -220,16 +219,20 @@ function launchPlayer(soundPath, volume) {
     );
   } else if (currentPlatform === 'darwin') {
     player = 'afplay';
-    child = spawn('afplay', ['-v', String(volume), soundPath], { detached: true, stdio: 'ignore' });
+    child = spawn('afplay', ['-v', String(volume), soundPath], { stdio: 'ignore' });
   } else {
     player = commandExists('ffplay') ? 'ffplay' : null;
     if (!player) throw new Error('ffplay is required to play the bundled M4A sounds on Linux.');
     const args = ['-nodisp', '-autoexit', '-loglevel', 'quiet', '-volume', String(Math.round(volume * 100)), soundPath];
-    child = spawn(player, args, { detached: true, stdio: 'ignore' });
+    child = spawn(player, args, { stdio: 'ignore' });
   }
-  child.on('error', () => {});
-  child.unref();
-  return player;
+  return new Promise((resolve, reject) => {
+    child.once('error', reject);
+    child.once('exit', (code, signal) => {
+      if (code === 0) resolve(player);
+      else reject(new Error(`${player} exited before playback completed (code=${code}, signal=${signal}).`));
+    });
+  });
 }
 
 function appendDebug(message) {
@@ -265,13 +268,14 @@ async function main() {
   if (volume === 0) return;
   if (!claimCooldown(kind, event, Number(eventConfig.cooldownMs || 0), args.dryRun)) return;
 
+  const player = args.dryRun ? 'dry-run' : await launchPlayer(sourcePath, volume);
   const result = {
     kind,
     hookEvent: event.hook_event_name,
     sound: sourcePath,
     volume,
     overridePath,
-    player: args.dryRun ? 'dry-run' : launchPlayer(sourcePath, volume),
+    player,
   };
   if (args.dryRun) process.stdout.write(`${JSON.stringify(result)}\n`);
 }

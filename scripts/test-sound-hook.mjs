@@ -22,6 +22,16 @@ function run(event) {
 
 assert.equal(run({ hook_event_name: 'Stop', session_id: 's1', turn_id: 't1' }).kind, 'complete');
 assert.equal(
+  run({ hook_event_name: 'Stop', session_id: 'focused', turn_id: 't1', window_focused: true }).kind,
+  'complete',
+  'Completion sound must not be suppressed while Codex is focused.',
+);
+assert.equal(
+  run({ hook_event_name: 'Stop', session_id: 'unfocused', turn_id: 't1', window_focused: false }).kind,
+  'complete',
+  'Completion sound must also play while Codex is in the background.',
+);
+assert.equal(
   run({ hook_event_name: 'PermissionRequest', session_id: 's1', turn_id: 't1', tool_name: 'Bash' }).kind,
   'approval',
 );

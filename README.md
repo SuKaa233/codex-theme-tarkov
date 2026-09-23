@@ -9,7 +9,7 @@
 | `PostToolUse` | `error.m4a` | 本地工具返回非零退出码或结构化错误时 |
 | `Interrupt` | `error.m4a` | 用户中止正在执行的任务时 |
 
-事件接入使用 Codex 官方 [Hooks](https://learn.chatgpt.com/docs/hooks)，不注入 Electron、不替换客户端文件，也不轮询内部数据库。三个 M4A 文件从参考项目逐字节复制，默认音量同为 70%；测试会锁定 SHA-256，防止日后被合成音或近似音替换。
+事件接入使用 Codex 官方 [Hooks](https://learn.chatgpt.com/docs/hooks)，不注入 Electron、不替换客户端文件，也不轮询内部数据库。`Stop` 不检查窗口焦点，Codex 在前台或后台时都会播放完成音。三个 M4A 文件从参考项目逐字节复制，默认音量同为 70%；测试会锁定 SHA-256，防止日后被合成音或近似音替换。
 
 ## 安装
 

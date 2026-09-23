@@ -21,7 +21,11 @@ for (const event of ['Stop', 'PermissionRequest', 'PostToolUse', 'Interrupt']) {
   const handler = hooks.hooks[event][0].hooks[0];
   assert.equal(handler.type, 'command');
   assert.equal(handler.async, true);
-  assert.ok(handler.timeout >= 15, `${event} timeout must cover the full 7-second done clip.`);
+  if (event === 'Interrupt') {
+    assert.ok(handler.timeout <= 3, 'Codex allows at most 3 seconds for Interrupt hooks.');
+  } else {
+    assert.ok(handler.timeout >= 15, `${event} timeout must cover the full 7-second done clip.`);
+  }
   assert.match(handler.command, /sound-hook\.mjs/);
 }
 
